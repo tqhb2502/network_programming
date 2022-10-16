@@ -10,13 +10,17 @@ void writeToFile(Account *list) {
 
     FILE *fp = fopen("account.txt", "w");
 
-    Account *acc = list;
-    while (acc) {
-        fprintf(fp, "%s %s %d\n", acc->username, acc->password, acc->status);
-        acc = acc->next;
-    }
+    if (fp) {
+        Account *acc = list;
+        while (acc) {
+            fprintf(fp, "%s %s %d\n", acc->username, acc->password, acc->status);
+            acc = acc->next;
+        }
 
-    fclose(fp);
+        fclose(fp);
+    } else {
+        printf("Can not open storage file");
+    }
 }
 
 /**
@@ -35,40 +39,44 @@ Account* start() {
     char password[MAX_LENGTH + 1];
     int status;
 
-    while (!feof(fp)) {
-        // Đọc dữ liệu
-        fscanf(fp, "%s", username);
-        fscanf(fp, "%s", password);
-        fscanf(fp, "%d", &status);
+    if (fp) {
+        while (!feof(fp)) {
+            // Đọc dữ liệu
+            fscanf(fp, "%s", username);
+            fscanf(fp, "%s", password);
+            fscanf(fp, "%d", &status);
 
-        // Kiểm tra dòng trống
-        if (strlen(username) == 0) {
-            continue;
+            // Kiểm tra dòng trống
+            if (strlen(username) == 0) {
+                continue;
+            }
+
+            // Lưu dữ liệu vào bộ nhớ
+            acc = (Account *) malloc(sizeof(Account));
+            strcpy(acc->username, username);
+            strcpy(acc->password, password);
+            acc->status = status;
+            acc->consecutiveFailedSignIn = 0;
+            acc->isSignedIn = 0;
+
+            // Thêm vào danh sách
+            if (list == NULL) {
+                list = acc;
+                prevAcc = acc;
+            } else {
+                prevAcc->next = acc;
+                prevAcc = acc;
+            }
+
+            // Reset biến lưu dữ liệu
+            strcpy(username, "");
+            strcpy(password, "");
         }
 
-        // Lưu dữ liệu vào bộ nhớ
-        acc = (Account *) malloc(sizeof(Account));
-        strcpy(acc->username, username);
-        strcpy(acc->password, password);
-        acc->status = status;
-        acc->consecutiveFailedSignIn = 0;
-        acc->isSignedIn = 0;
-
-        // Thêm vào danh sách
-        if (list == NULL) {
-            list = acc;
-            prevAcc = acc;
-        } else {
-            prevAcc->next = acc;
-            prevAcc = acc;
-        }
-
-        // Reset biến lưu dữ liệu
-        strcpy(username, "");
-        strcpy(password, "");
+        fclose(fp);
+    } else {
+        printf("Can not open storage file");
     }
-
-    fclose(fp);
 
     return list;
 }
