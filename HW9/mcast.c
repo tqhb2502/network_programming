@@ -1,3 +1,8 @@
+/**
+ * Ở bài này em làm theo mô hình lai giữa client-server và peer-to-peer
+ * nên trước khi dùng câu lệnh "./mcast <ip_address> <port_number>" để khởi động client,
+ * cần dùng câu lệnh "./server" để khởi động server trước ạ!
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +18,7 @@
 #include "util.h"
 
 #define BUFF_SIZE 30
-#define SERVER_PORT_NUMBER 10001
+#define SERVER_PORT_NUMBER 9999
 
 #define SYS_HELLO "#SYS_HELLO#"
 #define SYS_ADDR "#SYS_ADDR#"
@@ -121,7 +126,7 @@ int main(int argc, char *argv[]) {
 
     // connect to server
     if (connect(serv_conn_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
-        report_error();
+        printf("Cần sử dụng câu lệnh \"./server\" để khởi động server trước!\n");
         exit(0);
     }
 
@@ -162,6 +167,7 @@ int main(int argc, char *argv[]) {
             }
         } else {
             printf("Receiving client list done!\n");
+            printf("------------------\n");
             break;
         }
     }
@@ -212,6 +218,8 @@ int main(int argc, char *argv[]) {
                         inet_ntoa(client[i].listen_address.sin_addr), ntohs(client[i].listen_address.sin_port));
                 }
             }
+
+            printf("------------------\n");
         } else if (strcmp(cmd, CMD_QUIT) == 0) {
             
             // terminate threads
@@ -242,9 +250,11 @@ int main(int argc, char *argv[]) {
             pthread_mutex_destroy(&mutex);
 
             printf("Bye\n");
+            printf("------------------\n");
             break;
         } else {
             printf("Wrong command\n");
+            printf("------------------\n");
         }
     }
 

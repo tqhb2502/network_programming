@@ -1,3 +1,8 @@
+/**
+ * Ở bài này em làm theo mô hình lai giữa client-server và peer-to-peer
+ * nên trước khi dùng câu lệnh "./mcast <ip_address> <port_number>" để khởi động client,
+ * cần dùng câu lệnh "./server" để khởi động server trước ạ!
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +18,7 @@
 #include "util.h"
 
 #define BUFF_SIZE 30
-#define PORT_NUMBER 10001
+#define PORT_NUMBER 9999
 
 #define SYS_HELLO "#SYS_HELLO#"
 #define SYS_ADDR "#SYS_ADDR#"
@@ -238,9 +243,6 @@ void *active_client_handler() {
 
                     readable++;
                     recv(client[i].conn_socket, &pkg, dpkg_size, 0);
-
-                    printf("%s:%d:%s\n",
-                        inet_ntoa(client[i].listen_address.sin_addr), ntohs(client[i].listen_address.sin_port), pkg.control_signal);
                     
                     if (strcmp(pkg.control_signal, SYS_HELLO) == 0) {
 
